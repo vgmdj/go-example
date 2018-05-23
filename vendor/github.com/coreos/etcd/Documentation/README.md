@@ -1,1 +1,0 @@
-/home/vgmdj/temp/test/grpc-lb/vendor/github.com/coreos/etcd/Documentation/docs.md

@@ -6,9 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	"google.golang.org/grpc"
@@ -36,15 +33,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, syscall.SIGTERM, syscall.SIGINT, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGQUIT)
-	go func() {
-		s := <-ch
-		log.Printf("receive signal '%v'", s)
-		grpclb.UnRegister()
-		os.Exit(1)
-	}()
 
 	log.Printf("starting hello service at %s", *port)
 	s := grpc.NewServer()

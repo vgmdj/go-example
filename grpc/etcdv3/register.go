@@ -6,6 +6,10 @@ import (
 	"net"
 	"strings"
 	etcd3 "github.com/coreos/etcd/clientv3"
+	"os"
+	"os/signal"
+	"syscall"
+	"log"
 )
 
 // Prefix should start and end with no slash
@@ -38,6 +42,8 @@ func Register(name, host, port string, target string,  ttl int) error {
 		return fmt.Errorf("grpclb: refresh service '%s' with ttl to etcd3 failed: %s", name, err.Error())
 	}
 
+	defer AbnormalExit()
+
 	// wait deregister then delete
 	go func() {
 		<-Deregister
@@ -52,4 +58,16 @@ func Register(name, host, port string, target string,  ttl int) error {
 func UnRegister() {
 	Deregister <- struct{}{}
 	<-Deregister
+}
+
+//AbnormalExit receive signal from os then unregister
+func AbnormalExit(){
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, syscall.SIGTERM, syscall.SIGINT, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGQUIT)
+	go func() {
+		s := <-ch
+		log.Printf("receive signal '%v'", s)
+		UnRegister()
+		os.Exit(1)
+	}()
 }

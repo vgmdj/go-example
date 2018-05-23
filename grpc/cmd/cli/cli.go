@@ -9,8 +9,8 @@ import (
 
 	"google.golang.org/grpc"
 
-	pb "grpc/cmd/helloworld"
-	grpclb "grpc/etcdv3"
+	pb "github.com/vgmdj/go-example/grpc/cmd/helloworld"
+	grpclb "github.com/vgmdj/go-example/grpc/etcdv3"
 )
 
 var (
